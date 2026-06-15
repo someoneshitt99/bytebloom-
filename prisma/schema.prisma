@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model UserProfile {
+  id            String         @id @default(uuid())
+  userId        String         @unique // Supabase Auth UID
+  username      String
+  avatarUrl     String         @default("mascot_wave")
+  xp            Int            @default(0)
+  level         Int            @default(1)
+  streak        Int            @default(0)
+  coins         Int            @default(0)
+  hearts        Int            @default(5)
+  lastActive    DateTime       @default(now())
+  createdAt     DateTime       @default(now())
+  progress      UserProgress[]
+  achievements  UserBadge[]
+}
+
+model CourseTopic {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  order       Int      @unique
+  lessons     Lesson[]
+}
+
+model Lesson {
+  id          String         @id @default(uuid())
+  topicId     String
+  topic       CourseTopic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int
+  xpReward    Int            @default(10)
+  challenges  Challenge[]
+  progress    UserProgress[]
+}
+
+enum ChallengeType {
+  THEORY
+  FILL_IN_BLANK
+  MULTIPLE_CHOICE
+  CODE_PUZZLE
+}
+
+model Challenge {
+  id            String        @id @default(uuid())
+  lessonId      String
+  lesson        Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type          ChallengeType
+  order         Int
+  instructions  String
+  codeTemplate  String?       // Pre-filled code with placeholders (e.g. "bloomie.____()")
+  correctAnswer String        // Code answer or correct choice index/value
+  choices       String[]      // Choices for multiple choice or fill-in-blank options
+  expectedOutput String?      // Expected stdout or visual outcome (e.g., "right,right,up")
+}
+
+model UserProgress {
+  id          String      @id @default(uuid())
+  profileId   String
+  profile     UserProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt DateTime    @default(now())
+
+  @@unique([profileId, lessonId])
+}
+
+model UserBadge {
+  id          String      @id @default(uuid())
+  profileId   String
+  profile     UserProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  badgeName   String
+  unlockedAt  DateTime    @default(now())
+}
