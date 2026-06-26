@@ -73,17 +73,16 @@ export default function DashboardPage() {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh',
+        height: '100vh',
         backgroundColor: '#1E1233',
         position: 'relative',
         overflow: 'hidden'
       }}
     >
-      {/* Top Header Indicators Panel */}
+      {/* Top Header Indicators Panel — fixed, tidak ikut scroll */}
       <div
         style={{
-          position: 'sticky',
-          top: 0,
+          flexShrink: 0,
           backgroundColor: '#1E1233',
           padding: '16px 16px 10px 16px',
           zIndex: 80,
@@ -103,47 +102,55 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Main Tab Renderings */}
-      {activeTab === 'learn' && (
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            paddingBottom: '100px',
-            position: 'relative'
-          }}
-        >
-          <BackgroundDecorations />
+      {/* Scrollable content area — cuma bagian ini yang discroll */}
+      <div
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          position: 'relative'
+        }}
+      >
+        {activeTab === 'learn' && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              paddingBottom: '24px',
+              position: 'relative',
+              minHeight: '100%'
+            }}
+          >
+            <BackgroundDecorations />
 
-          <ProgressOverviewCard
-            progressPercent={progressPercent}
-            completedCount={completedCount}
-            totalLessons={totalLessons}
-            onOpenOutline={() => setShowOutlineDrawer(true)}
+            <ProgressOverviewCard
+              progressPercent={progressPercent}
+              completedCount={completedCount}
+              totalLessons={totalLessons}
+              onOpenOutline={() => setShowOutlineDrawer(true)}
+            />
+
+            <LearningPathMap
+              courses={courses}
+              completedLessons={user.completedLessons}
+              hearts={user.hearts}
+              onLessonClick={goToLesson}
+              onOutOfHearts={() => setShowHeartModal(true)}
+            />
+          </div>
+        )}
+
+        {activeTab === 'medals' && <MedalsTab unlockedBadges={user.unlockedBadges} />}
+
+        {activeTab === 'profile' && (
+          <ProfileTab
+            username={user.username}
+            level={user.level}
+            xp={user.xp}
+            coins={user.coins}
+            streak={user.streak}
           />
-
-          <LearningPathMap
-            courses={courses}
-            completedLessons={user.completedLessons}
-            hearts={user.hearts}
-            onLessonClick={goToLesson}
-            onOutOfHearts={() => setShowHeartModal(true)}
-          />
-        </div>
-      )}
-
-      {activeTab === 'medals' && <MedalsTab unlockedBadges={user.unlockedBadges} />}
-
-      {activeTab === 'profile' && (
-        <ProfileTab
-          username={user.username}
-          level={user.level}
-          xp={user.xp}
-          coins={user.coins}
-          streak={user.streak}
-        />
-      )}
+        )}
+      </div>
 
       {/* Heart Refill Modal Overlay */}
       <HeartRefillModal
@@ -169,8 +176,10 @@ export default function DashboardPage() {
         }}
       />
 
-      {/* Persistent bottom navigation bar */}
-      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+      {/* Persistent bottom navigation bar — fixed, tidak ikut scroll */}
+      <div style={{ flexShrink: 0 }}>
+        <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+      </div>
     </div>
   );
 }

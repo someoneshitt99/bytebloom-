@@ -21,7 +21,7 @@ export default function LearningPathMap({
     hearts,
     onLessonClick,
     onOutOfHearts
-    }: LearningPathMapProps) {
+}: LearningPathMapProps) {
     return (
         <div
         style={{
@@ -167,3 +167,4 @@ export default function LearningPathMap({
         </div>
     );
 }
+<br/>
