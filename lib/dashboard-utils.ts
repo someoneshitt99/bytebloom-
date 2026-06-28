@@ -81,3 +81,24 @@ export function getTopicProgress(
 export function getZigzagOffset(lessonIndex: number): number {
   return Math.sin(lessonIndex * 1.5) * 45;
 }
+
+export interface ActiveLevelInTopic {
+    title: string;
+    levelNumber: number; // urutan ke-berapa (1-indexed) dalam topic ini
+}
+
+export function getActiveLevelInTopic(
+    topic: CourseTopic,
+    completedLessons: string[]
+): ActiveLevelInTopic | null {
+    if (topic.lessons.length === 0) return null;
+
+    for (let i = 0; i < topic.lessons.length; i++) {
+        if (!completedLessons.includes(topic.lessons[i].id)) {
+        return { title: topic.lessons[i].title, levelNumber: i + 1 };
+        }
+    }
+
+    const lastIndex = topic.lessons.length - 1;
+    return { title: topic.lessons[lastIndex].title, levelNumber: lastIndex + 1 };
+}

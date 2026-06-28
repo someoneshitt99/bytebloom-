@@ -3,7 +3,8 @@ interface StatsBarProps {
     xp: number;
     streak: number;
     coins: number;
-    activeLevelTitle: string;
+    sectionLabel: string; // contoh: "Section 1, Level 1"
+    sectionTitle: string; // contoh: "Section 1 Pengenalan Web Development"
     onHeartsClick: () => void;
 }
 
@@ -18,28 +19,28 @@ function StatBox({
     onClick?: () => void;
 }) {
     return (
-    <div
+        <div
         onClick={onClick}
         style={{
-        backgroundColor: '#2A1648',
-        borderRadius: '12px',
-        border: '2px solid #3D236E',
-        padding: '8px 4px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '4px',
-        fontSize: '12px',
-        fontWeight: 'bold',
-        fontFamily: 'var(--font-kids-header)',
-        cursor: onClick ? 'pointer' : 'default',
-        boxShadow: 'var(--shadow-playful)',
-        transition: 'transform 0.1s'
+            backgroundColor: '#2A1648',
+            borderRadius: '12px',
+            border: '2px solid #3D236E',
+            padding: '8px 4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4px',
+            fontSize: '12px',
+            fontWeight: 'bold',
+            fontFamily: 'var(--font-kids-header)',
+            cursor: onClick ? 'pointer' : 'default',
+            boxShadow: 'var(--shadow-playful)',
+            transition: 'transform 0.1s'
         }}
-    >
+        >
         <span>{icon}</span>
         <span style={{ color: '#FFF' }}>{value}</span>
-    </div>
+        </div>
     );
 }
 
@@ -48,9 +49,10 @@ export default function StatsBar({
     xp,
     streak,
     coins,
-    activeLevelTitle,
+    sectionLabel,
+    sectionTitle,
     onHeartsClick
-}: StatsBarProps) {
+    }: StatsBarProps) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {/* Game Stats Containers Row */}
@@ -61,23 +63,23 @@ export default function StatsBar({
             <StatBox icon="🪙" value={`${coins}`} />
         </div>
 
-        {/* Active Level Banner */}
+        {/* Active Section/Level Banner — berubah dinamis sesuai scroll-spy */}
         <div
             style={{
             backgroundColor: '#2A1648',
             border: '2px solid #3D236E',
             borderRadius: '12px',
-            padding: '10px',
-            textAlign: 'center',
+            padding: '10px 14px',
             fontFamily: 'var(--font-kids-header)',
-            fontSize: '13px',
-            fontWeight: 700,
-            color: '#FFF',
-            letterSpacing: '0.5px',
             boxShadow: 'var(--shadow-playful)'
             }}
         >
-            🎯 Level Aktif: {activeLevelTitle}
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.5px' }}>
+            {sectionLabel}
+            </div>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: '#FFF', marginTop: '2px' }}>
+            {sectionTitle}
+            </div>
         </div>
         </div>
     );
