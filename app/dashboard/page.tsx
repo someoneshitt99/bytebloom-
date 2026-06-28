@@ -14,7 +14,7 @@ import HeartRefillModal from '@/components/dashboard/HeartRefillModal';
 import CourseOutlineDrawer from '@/components/dashboard/CourseOutlineDrawer';
 import BottomNav, { DashboardTab } from '@/components/dashboard/BottomNav';
 
-import { getActiveLevelTitle } from '@/lib/dashboard-utils';
+import { getActiveLevelInTopic } from '@/lib/dashboard-utils';
 
 export default function DashboardPage() {
   const { user, courses, refillHearts, loading } = useGame();
@@ -23,6 +23,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<DashboardTab>('learn');
   const [showHeartModal, setShowHeartModal] = useState(false);
   const [showOutlineDrawer, setShowOutlineDrawer] = useState(false);
+  const [visibleTopicIndex, setVisibleTopicIndex] = useState(0);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -50,7 +51,17 @@ export default function DashboardPage() {
   const totalLessons = courses.reduce((acc, curr) => acc + curr.lessons.length, 0);
   const completedCount = user.completedLessons.length;
   const progressPercent = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
-  const activeLevelTitle = getActiveLevelTitle(courses, user.completedLessons);
+
+  // Header dinamis: section + level aktif dari topic yang sedang terlihat
+  // di viewport (scroll-spy), bukan level aktif global.
+  const visibleTopic = courses[visibleTopicIndex];
+  const activeLevelInTopic = visibleTopic
+    ? getActiveLevelInTopic(visibleTopic, user.completedLessons)
+    : null;
+  const sectionLabel = visibleTopic
+    ? `Section ${visibleTopic.order}, Level ${activeLevelInTopic?.levelNumber ?? 1}`
+    : '';
+  const sectionTitle = visibleTopic?.title ?? '';
 
   const handleTabChange = (tab: DashboardTab) => {
     setActiveTab(tab);
@@ -97,7 +108,8 @@ export default function DashboardPage() {
           xp={user.xp}
           streak={user.streak}
           coins={user.coins}
-          activeLevelTitle={activeLevelTitle}
+          sectionLabel={sectionLabel}
+          sectionTitle={sectionTitle}
           onHeartsClick={() => setShowHeartModal(true)}
         />
       </div>
@@ -135,6 +147,7 @@ export default function DashboardPage() {
               hearts={user.hearts}
               onLessonClick={goToLesson}
               onOutOfHearts={() => setShowHeartModal(true)}
+              onActiveTopicChange={setVisibleTopicIndex}
             />
           </div>
         )}

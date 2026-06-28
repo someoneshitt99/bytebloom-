@@ -5,6 +5,7 @@ import {
     getZigzagOffset,
     isLessonUnlocked
 } from '@/lib/dashboard-utils';
+import { useActiveSectionObserver } from '@/lib/useActiveSectionObserver';
 import LessonNode from './LessonNode';
 
 interface LearningPathMapProps {
@@ -13,15 +14,19 @@ interface LearningPathMapProps {
     hearts: number;
     onLessonClick: (lessonId: string) => void;
     onOutOfHearts: () => void;
-}
+    onActiveTopicChange: (topicIndex: number) => void;
+    }
 
 export default function LearningPathMap({
     courses,
     completedLessons,
     hearts,
     onLessonClick,
-    onOutOfHearts
+    onOutOfHearts,
+    onActiveTopicChange
 }: LearningPathMapProps) {
+    const setSectionRef = useActiveSectionObserver(courses.length, onActiveTopicChange);
+
     return (
         <div
         style={{
@@ -39,53 +44,50 @@ export default function LearningPathMap({
             const { percent: topicProgress } = getTopicProgress(topic.lessons, completedLessons);
 
             return (
-            <div key={topic.id} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {/* Topic Section Header */}
+            <div
+                key={topic.id}
+                ref={setSectionRef(topicIdx)}
+                style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+            >
+                {/* Topic Section Divider — garis pembatas sederhana ala Duolingo */}
                 <div
                 style={{
-                    background: 'linear-gradient(135deg, #2b115c 0%, #4a218f 100%)',
-                    border: '3px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: '24px',
-                    padding: '16px 20px',
-                    margin: '20px 16px 0px 16px',
-                    boxShadow: 'var(--shadow-playful)',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    alignSelf: 'stretch'
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    width: '100%',
+                    padding: '0 24px',
+                    margin: '20px 0 8px 0'
                 }}
                 >
-                {/* Glowing highlight */}
                 <div
                     style={{
-                    position: 'absolute',
-                    top: '-30px',
-                    right: '-30px',
-                    width: '90px',
-                    height: '90px',
-                    borderRadius: '50%',
-                    backgroundColor: topicProgress === 100 ? 'var(--success)' : 'var(--accent-cyan)',
-                    filter: 'blur(35px)',
-                    opacity: 0.3
+                    flex: 1,
+                    height: '2px',
+                    backgroundColor: topicProgress === 100 ? 'var(--success-light)' : '#3D236E'
                     }}
                 />
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                    Bagian {topic.order}
-                    </span>
-                    {topicProgress === 100 && (
-                    <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'var(--success-light)' }}>
-                        Selesai! 🌟
-                    </span>
-                    )}
-                </div>
-
-                <h3 style={{ fontSize: '16px', color: '#FFF', margin: '4px 0', fontFamily: 'var(--font-kids-header)' }}>
+                <span
+                    style={{
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    color: topicProgress === 100 ? 'var(--success-light)' : 'var(--accent-cyan)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    whiteSpace: 'nowrap',
+                    fontFamily: 'var(--font-kids-header)'
+                    }}
+                >
                     {topic.title}
-                </h3>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                    {topic.description}
-                </p>
+                    {topicProgress === 100 && ' ✓'}
+                </span>
+                <div
+                    style={{
+                    flex: 1,
+                    height: '2px',
+                    backgroundColor: topicProgress === 100 ? 'var(--success-light)' : '#3D236E'
+                    }}
+                />
                 </div>
 
                 {/* Levels list in a zig-zag path */}
@@ -167,4 +169,3 @@ export default function LearningPathMap({
         </div>
     );
 }
-<br/>
