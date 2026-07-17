@@ -11,7 +11,7 @@ import {
 } from '@/app/actions';
 
 // Data types matching our schema
-export type ChallengeType = 'THEORY' | 'FILL_IN_BLANK' | 'MULTIPLE_CHOICE' | 'CODE_PUZZLE';
+export type ChallengeType = 'THEORY' | 'FILL_IN_BLANK' | 'MULTIPLE_CHOICE' | 'CODE_PUZZLE' | 'SCRATCH_BLOCK';
 
 export interface Challenge {
   id: string;
@@ -23,6 +23,7 @@ export interface Challenge {
   correctAnswer: string;
   choices: string[];
   expectedOutput?: string;
+  gridConfig?: GridConfig; 
 }
 
 export interface Lesson {
@@ -56,6 +57,20 @@ export interface UserProfile {
   lastActive: string;
   completedLessons: string[]; // lessonIds
   unlockedBadges: string[];
+}
+
+export interface GridObstacle {
+  x: number;
+  y: number;
+  type: 'stone';
+}
+
+export interface GridConfig {
+  rows: number;
+  cols: number;
+  startPosition: { x: number; y: number };
+  goalPosition: { x: number; y: number };
+  obstacles: GridObstacle[];
 }
 
 interface GameContextType {

@@ -201,7 +201,6 @@ export default function AdminPage() {
         fontFamily: 'var(--font-kids-body)'
       }}
     >
-      {/* Admin Title Block */}
       <div
         style={{
           display: 'flex',
